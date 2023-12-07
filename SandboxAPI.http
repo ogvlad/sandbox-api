@@ -1,0 +1,11 @@
+@SandboxAPI_HostAddress = http://localhost:5208
+
+GET {{SandboxAPI_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{SandboxAPI_HostAddress}}/todos/1
+Accept: application/json
+
+###
