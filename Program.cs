@@ -38,7 +38,8 @@ todosApi.MapGet("/{id}", (int id) =>
         : Results.NotFound());
 
 var cryptoApi = app.MapGroup("/crypto");
-cryptoApi.MapPost("/rsa", (Request payload) => DeliveringKeyManager.GetEncryptedKey(payload));
+cryptoApi.MapPost("/rsa-xml", (Request payload) => DeliveringKeyManager.GetEncryptedKey_XML(payload));
+cryptoApi.MapPost("/rsa-binary", (Request payload) => DeliveringKeyManager.GetEncryptedKey_Binary(payload));
 
 app.Run();
 

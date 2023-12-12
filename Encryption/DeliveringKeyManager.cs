@@ -9,7 +9,7 @@ namespace SandboxAPI.Encryption
         const int RsaKeySize = 1024;
         const string TextToEncrypt = "A quick brown fox jumps over the lazy dog";
 
-        public static DeliveringKeyModel GetEncryptedKey2(Request request)
+        public static DeliveringKeyModel GetEncryptedKey_Binary(Request request)
         {
             var publicKey = Convert.FromBase64String(request.publicKeyBase64);
             var data = Encoding.UTF8.GetBytes(TextToEncrypt);
@@ -22,10 +22,11 @@ namespace SandboxAPI.Encryption
             return new DeliveringKeyModel
             {
                 EncryptedMessage = encryptedText,
+                Mode = $"Binary Key - {DateTime.Now.ToLongTimeString()}"
             };
         }
 
-        public static DeliveringKeyModel GetEncryptedKey(Request request)
+        public static DeliveringKeyModel GetEncryptedKey_XML(Request request)
         {
             var data = Encoding.UTF8.GetBytes(TextToEncrypt);
 
@@ -40,6 +41,7 @@ namespace SandboxAPI.Encryption
             return new DeliveringKeyModel
             {
                 EncryptedMessage = encryptedText,
+                Mode = $"XML Key - {DateTime.Now.ToLongTimeString()}"
             };
         }
     }
