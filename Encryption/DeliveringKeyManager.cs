@@ -1,27 +1,46 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SandboxAPI.Encryption
 {
     public sealed class DeliveringKeyManager
     {
+        const int RsaKeySize = 1024;
+        const string TextToEncrypt = "A quick brown fox jumps over the lazy dog";
+
+        public static DeliveringKeyModel GetEncryptedKey2(Request request)
+        {
+            var publicKey = Convert.FromBase64String(request.publicKeyBase64);
+            var data = Encoding.UTF8.GetBytes(TextToEncrypt);
+
+            using RSACryptoServiceProvider provider = new RSACryptoServiceProvider(RsaKeySize);
+            provider.ImportSubjectPublicKeyInfo(publicKey, out _);
+
+            byte[] encryptedBytes = provider.Encrypt(data, true);
+            string encryptedText = Convert.ToBase64String(encryptedBytes);
+            return new DeliveringKeyModel
+            {
+                EncryptedMessage = encryptedText,
+            };
+        }
+
         public static DeliveringKeyModel GetEncryptedKey(Request request)
         {
-            string textToEncrypt = "A quick brown fox jumps over the lazy dog";
+            var data = Encoding.UTF8.GetBytes(TextToEncrypt);
 
-            byte[] publicKeyBytes = Convert.FromBase64String(request.publicKeyBase64);
+            var encryptKey = string.Concat("<RSAKeyValue><Modulus>", request.publicKeyBase64,
+                "</Modulus><Exponent>Aw==</Exponent></RSAKeyValue>");
 
-            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            using RSACryptoServiceProvider provider = new RSACryptoServiceProvider(RsaKeySize);
+            provider.FromXmlString(encryptKey);
+            var encryptedBytes = provider.Encrypt(data, true);
+            string encryptedText = Convert.ToBase64String(encryptedBytes);
+
+            return new DeliveringKeyModel
             {
-                rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
-
-                byte[] encryptedBytes = rsa.Encrypt(Encoding.UTF8.GetBytes(textToEncrypt), true);
-                string encryptedText = Convert.ToBase64String(encryptedBytes);
-                return new DeliveringKeyModel
-                {
-                    EncryptedMessage = encryptedText,
-                };
-            }
+                EncryptedMessage = encryptedText,
+            };
         }
     }
 }
